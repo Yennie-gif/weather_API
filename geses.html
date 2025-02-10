@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Fetcher</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(to right, #17f0e1, #12DAFB, #40e889);
+            position: relative;
+            overflow: hidden;
+        }
+        .clouds {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            background: url('https://www.transparenttextures.com/patterns/clouds.png') repeat;
+            opacity: 0.3;
+            z-index: 0;
+        }
+        h1 {
+            color: #fff;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            z-index: 1;
+        }
+        input {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 2px solid #fff;
+            margin-right: 10px;
+            width: 250px;
+            z-index: 1;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            border-color: #12DAFB;
+            outline: none;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            background-color: #fff;
+            color: #17f0e1;
+            cursor: pointer;
+            z-index: 1;
+            transition: background-color 0.3s, transform 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        button:hover {
+            background-color: #12DAFB;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+        .result {
+            margin-top: 50px;
+            color: #fff;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
+            text-align: left;
+            width: 300px;
+        }
+        @media (max-width: 600px) {
+            input {
+                width: calc(100% - 30px);
+                margin-right: 0;
+            }
+            button {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="clouds"></div>
+    <h1>WEATHER UPDATE</h1>
+    <input type="text" id="city" placeholder="Enter City Name">
+    <button onclick="getWeather()">Get Weather</button>
+
+    <div class="result" id="result"></div>
+
+    <script>
+        function getWeather() {
+            const city = document.getElementById('city').value;
+            const apiKey = '2f6e9f5c83451013b5b9307960b99db9'; 
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.cod === 200) {
+                        const temperature = data.main.temp;
+                        const humidity = data.main.humidity;
+                        const description = data.weather[0].description;
+                        const windSpeed = data.wind.speed;
+
+                        document.getElementById('result').innerHTML = `
+                            <h2>Weather in ${city}</h2>
+                            <p><strong>Temperature:</strong> ${temperature}°C</p>
+                            <p><strong>Humidity:</strong> ${humidity}%</p>
+                            <p><strong>Condition:</strong> ${description.charAt(0).toUpperCase() + description.slice(1)}</p>
+                            <p><strong>Wind Speed:</strong> ${windSpeed} m/s</p>
+                        `;
+                    } else {
+                        document.getElementById('result').innerHTML = `<p>City not found. Please try again.</p>`;
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('result').innerHTML = `<p>Error fetching data. Please try again later.</p>`;
+                });
+        }
+    </script>
+
+</body>
+</html>
